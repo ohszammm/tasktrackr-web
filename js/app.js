@@ -7,8 +7,10 @@ async function loadTasks() {
 }
 
 function renderTask(task) {
+  const priorityClass = `priority-${task.priority || 3}`;
   return `<li class="task-item" data-id="${task.id}">
     <span>${task.title}</span>
+    <span class="badge ${priorityClass}">P${task.priority || 3}</span>
   </li>`;
 }
 
@@ -20,10 +22,11 @@ function renderTasks(tasks) {
 document.getElementById("task-form").addEventListener("submit", async (e) => {
   e.preventDefault();
   const title = document.getElementById("title").value;
+  const priority = document.getElementById("priority").value;
   await fetch(`${API_URL}?action=add`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ title })
+    body: JSON.stringify({ title, priority })
   });
   document.getElementById("title").value = "";
   loadTasks();
