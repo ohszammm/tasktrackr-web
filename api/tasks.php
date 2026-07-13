@@ -3,18 +3,22 @@ header("Content-Type: application/json");
 
 $dataFile = __DIR__ . "/../data/tasks.json";
 
-function loadTasks($dataFile) {
-    if (!file_exists($dataFile)) return [];
+function loadTasks($dataFile)
+{
+    if (!file_exists($dataFile))
+        return [];
     return json_decode(file_get_contents($dataFile), true);
 }
 
-function saveTasks($dataFile, $tasks) {
+function saveTasks($dataFile, $tasks)
+{
     file_put_contents($dataFile, json_encode($tasks, JSON_PRETTY_PRINT));
 }
 
-function addTask(&$tasks, $title) {
+function addTask(&$tasks, $title, $priority = 3)
+{
     $newId = count($tasks) ? max(array_column($tasks, 'id')) + 1 : 1;
-    $task = ["id" => $newId, "title" => $title, "status" => "open"];
+    $task = ["id" => $newId, "title" => $title, "status" => "open", "priority" => $priority];
     $tasks[] = $task;
     return $task;
 }
@@ -29,7 +33,8 @@ switch ($action) {
 
     case 'add':
         $input = json_decode(file_get_contents('php://input'), true);
-        $task = addTask($tasks, $input['title']);
+        $priority = $input['priority'] ?? 3;
+        $task = addTask($tasks, $input['title'], $priority);
         saveTasks($dataFile, $tasks);
         echo json_encode($task);
         break;
@@ -37,7 +42,8 @@ switch ($action) {
     case 'done':
         $input = json_decode(file_get_contents('php://input'), true);
         foreach ($tasks as &$t) {
-            if ($t['id'] == $input['id']) $t['status'] = 'done';
+            if ($t['id'] == $input['id'])
+                $t['status'] = 'done';
         }
         saveTasks($dataFile, $tasks);
         echo json_encode(["success" => true]);
