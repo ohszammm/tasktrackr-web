@@ -53,6 +53,15 @@ $task = addTask($tasks, $input['title'], $due);
         echo json_encode(["success" => true]);
         break;
 
+        case 'search':
+    $q = strtolower($_GET['q'] ?? '');
+    $results = array_values(array_filter($tasks, function ($t) use ($q) {
+        return strpos(strtolower($t['title']), $q) !== false;
+    }));
+    echo json_encode($results);
+    break;
+
+
 
     default:
         http_response_code(400);
